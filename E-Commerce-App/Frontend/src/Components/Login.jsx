@@ -4,20 +4,23 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [Fill, setFill] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-
-    useEffect(() => {
-      const auth = localStorage.getItem("user");
-      if (auth) {
-        navigate("/"); // Redirect if already logged in
-      }
-    }, []); // Runs once on mount
-
+  useEffect(() => {
+    const auth = localStorage.getItem("user");
+    if (auth) {
+      navigate("/"); // Redirect if already logged in
+    }
+  }, []); // Runs once on mount
 
   const handleLogin = async (e) => {
+    if (!email || !password) {
+      setFill(true);
+      return false;
+    }
 
-    // e.preventDefault();
     let result = await fetch("http://localhost:3000/login", {
       method: "post",
       body: JSON.stringify({ email, password }),
@@ -30,12 +33,13 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(result));
       navigate("/");
     } else {
-      alert("please enter correct details !");
+      setError(result.msg)
     }
 
   };
 
   return (
+    // <form>
     <div className="font-semibold mt-20 flex flex-col justify-center items-center">
       <div className="mb-6">
         <h3 className="text-3xl">Login</h3>
@@ -54,6 +58,7 @@ const Login = () => {
             id="email"
             className="outline-none w-80 h-10 pl-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
           />
+          {Fill && !email && <p className="text-red-600">Enter the email</p> }
         </div>
         <div className="mb-4 flex flex-col items-start w-full">
           <label htmlFor="password" className="mb-1">
@@ -68,6 +73,8 @@ const Login = () => {
             id="password"
             className="outline-none w-80 h-10 pl-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
           />
+          {Fill && !password && <p className="text-red-600">Enter the password</p> }
+
         </div>
         <button
           onClick={handleLogin}
@@ -75,8 +82,11 @@ const Login = () => {
         >
           Login
         </button>
+
+        {error && <p className="text-red-600">{error}</p> }
       </div>
     </div>
+    // </form>
   );
 };
 

@@ -5,6 +5,8 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [fill, setFill] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,14 +18,34 @@ const Signup = () => {
 
   const handleChange = async (e) => {
     e.preventDefault();
-    let result = await fetch("http://localhost:3000/signup", {
-      method: "post",
-      body: JSON.stringify({ name, email, password }),
-      headers: { "Content-Type": "application/json" },
-    });
-    result = await result.json();
-    localStorage.setItem("user", JSON.stringify(result));
-    navigate("/");
+    setError("");
+
+    if (!name || !email || !password) {
+      setFill(true);
+      return false;
+    }
+
+    try {
+      let result = await fetch("http://localhost:3000/signup", {
+        method: "post",
+        body: JSON.stringify({ name, email, password }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      let NewResult = await result.json();
+
+      if (!result.ok) {
+        setError(NewResult.msg);
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(NewResult));
+      navigate("/");
+    } catch (error) {
+      setError("something went wrong !");
+    }
+
+    console.log(error);
   };
 
   return (
@@ -45,6 +67,7 @@ const Signup = () => {
             id="name"
             className="outline-none w-80 h-10 pl-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
           />
+          {fill && !name && <p className="text-red-600">Enter the name</p> }
         </div>
         <div className="mb-4 flex flex-col items-start w-full">
           <label htmlFor="email" className="mb-1">
@@ -58,6 +81,7 @@ const Signup = () => {
             id="email"
             className="outline-none w-80 h-10 pl-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
           />
+          {fill && !email && <p className="text-red-600">Enter the email</p> }
         </div>
         <div className="mb-4 flex flex-col items-start w-full">
           <label htmlFor="password" className="mb-1">
@@ -71,6 +95,7 @@ const Signup = () => {
             id="password"
             className="outline-none w-80 h-10 pl-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400"
           />
+          {fill && !password && <p className="text-red-600">Enter the password</p> }
         </div>
         <button
           onClick={handleChange}
@@ -78,6 +103,8 @@ const Signup = () => {
         >
           Sign Up
         </button>
+        <br />
+        {error && <p>{error}</p>}
       </div>
     </div>
   );

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react"; // Import icons for mobile menu
 import "./Navbar.css";
 
 const Navbar = () => {
   const auth = localStorage.getItem("user");
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const logout = () => {
     localStorage.clear();
@@ -12,102 +14,105 @@ const Navbar = () => {
   };
 
   return (
-    <div className="shadow-md">
-      {auth ? (
-        <ul className="flex p-4 font-medium justify-end justify-center items-center  ">
-          <div className=" flex absolute w-3xl left-0 justify-center items-center">
-            <li className="pl-20 pr-20">
-              <NavLink
-                to={auth ? "/" : "/signup"}
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-              >
-                Logo
-              </NavLink>
-            </li>
-            <li className="pr-20">
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/"
-              >
+    <nav className="shadow-md bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center py-4">
+          {/* Logo Section */}
+          <NavLink to={auth ? "/" : "/signup"} className="text-xl font-bold">
+            Logo
+          </NavLink>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex space-x-6">
+            {auth ? (
+              <>
+                <NavLink to="/" className="nav-link">
+                  Product
+                </NavLink>
+                <NavLink to="/add" className="nav-link">
+                  Add Product
+                </NavLink>
+                <NavLink to="/update" className="nav-link">
+                  Update Product
+                </NavLink>
+                <NavLink to="/profile" className="nav-link">
+                  Profile
+                </NavLink>
+                <NavLink to="/signup" className="nav-link text-red-500" onClick={logout}>
+                  Logout ({JSON.parse(auth).name})
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink to="/signup" className="nav-link">
+                  SignUp
+                </NavLink>
+                <NavLink to="/login" className="nav-link">
+                  Login
+                </NavLink>
+              </>
+            )}
+          </div>
+
+          {/* Search Input (Hidden on small screens) */}
+          {auth && (
+            <div className="hidden md:flex">
+              <input
+                type="text"
+                placeholder="Search"
+                className="outline-1 h-10 w-64 rounded-3xl pl-5 border border-gray-300"
+              />
+            </div>
+          )}
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden text-gray-600"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-gray-100 p-4 space-y-4 text-center">
+          {auth ? (
+            <>
+              <NavLink to="/" className="block nav-link">
                 Product
               </NavLink>
-            </li>
-            <input
-              type="text"
-              placeholder="Search"
-              className=" outline-1 h-10 w-3xl rounded-3xl pl-5"
-            />
-          </div>
-          <div className="flex justify-evenly w-2xl pr-5 justify-center items-center w-3xl">
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/add"
-              >
+              <NavLink to="/add" className="block nav-link">
                 Add Product
               </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/update"
-              >
+              <NavLink to="/update" className="block nav-link">
                 Update Product
               </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/profile"
-              >
+              <NavLink to="/profile" className="block nav-link">
                 Profile
               </NavLink>
-            </li>
-            <li>
               <NavLink
-                className="active-link-red"
-                onClick={logout}
                 to="/signup"
+                className="block nav-link text-red-500"
+                onClick={logout}
               >
                 Logout ({JSON.parse(auth).name})
               </NavLink>
-            </li>
-          </div>
-        </ul>
-      ) : (
-        <ul className="flex p-4 font-medium justify-end justify-center items-center ">
-          <div className="flex w-70 absolute left-0 justify-center justify-evenly ">
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to={auth ? "/" : "/signup"}
-              >
-                Logo
-              </NavLink>
-            </li>
-          </div>
-
-          <div className="flex w-100 justify-center justify-evenly ">
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/signup"
-              >
+            </>
+          ) : (
+            <>
+              <NavLink to="/signup" className="block nav-link">
                 SignUp
               </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className={({ isActive }) => (isActive ? "active-link" : "")}
-                to="/login"
-              >
+              <NavLink to="/login" className="block nav-link">
                 Login
               </NavLink>
-            </li>
-          </div>
-        </ul>
+            </>
+          )}
+        </div>
       )}
-    </div>
+    </nav>
   );
 };
 

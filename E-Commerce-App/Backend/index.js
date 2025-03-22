@@ -3,17 +3,30 @@ const cors = require("cors");
 require("./db/config");
 const app = express();
 const Users = require("./db/User");
+const Product = require("./db/Product");
 
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.post("/signup", async (req, res) => {
-  try {   
+  try {
+    let { email } = req.body;
+
+    let user = await Users.findOne({ email: email });
+
+    if (user) {
+      return res
+        .status(400)
+        .json({ msg: "You are already registered with this email !" });
+    }
+
     let newUser = new Users(req.body);
     let result = await newUser.save();
+
     result = result.toObject();
     delete result.password;
+
     res.send(result);
   } catch (error) {
     console.log(error);
@@ -21,18 +34,49 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-
-  if(req.body.password && req.body.email) {
-    let user = await Users.findOne(req.body).select("-password");
-    if(user) {
-      res.send(user);
-    } else {
-      res.send("User Not Found")
+  try {
+    if (req.body.password && req.body.email) {
+      let user = await Users.findOne(req.body).select("-password");
+      if (user) {
+        res.send(user);
+      } else {
+        return res
+          .status(400)
+          .json({ msg: "You are not registered, please resistered !" });
+      }
     }
-  } else {
-    res.send("User Not Found")
+  } catch (error) {
+    console.log(error);
   }
-  
+});
+
+app.post("/add", async (req, res) => {
+  let newproduct = new Product(req.body);
+  let result = await newproduct.save();
+
+  res.send(result);
+});
+
+app.get("/search/:key", async (req, res) => {
+  let result = await Product.find({
+    $or: [
+      {
+        name: { $regex: req.params.key, $options: "i" },
+      },
+      {
+        company: { $regex: req.params.key },
+      },
+      {
+        category: { $regex: req.params.key },
+      },
+    ],
+  });
+
+  if (result.length == 0) {
+    return res.status(400).json({ msg: "result not found" });
+  }
+
+  res.send(result);
 });
 
 app.listen(3000, () => {
