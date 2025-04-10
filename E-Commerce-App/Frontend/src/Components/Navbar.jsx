@@ -7,10 +7,17 @@ const Navbar = () => {
   const auth = localStorage.getItem("user");
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const logout = () => {
     localStorage.clear();
     navigate("/signup");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log("ok");
+    setSearch("");
   };
 
   return (
@@ -27,7 +34,7 @@ const Navbar = () => {
             {auth ? (
               <>
                 <NavLink to="/" className="nav-link">
-                  Product
+                  Products
                 </NavLink>
                 <NavLink to="/add" className="nav-link">
                   Add Product
@@ -38,12 +45,19 @@ const Navbar = () => {
                 <NavLink to="/profile" className="nav-link">
                   Profile
                 </NavLink>
-                <NavLink to="/signup" className="nav-link text-red-500" onClick={logout}>
+                <NavLink
+                  to="/signup"
+                  className="nav-link text-red-500"
+                  onClick={logout}
+                >
                   Logout ({JSON.parse(auth).name})
                 </NavLink>
               </>
             ) : (
               <>
+                <NavLink to="/" className="nav-link">
+                  Products
+                </NavLink>
                 <NavLink to="/signup" className="nav-link">
                   SignUp
                 </NavLink>
@@ -57,11 +71,21 @@ const Navbar = () => {
           {/* Search Input (Hidden on small screens) */}
           {auth && (
             <div className="hidden md:flex">
-              <input
-                type="text"
-                placeholder="Search"
-                className="outline-1 h-10 w-64 rounded-3xl pl-5 border border-gray-300"
-              />
+              <form className="flex">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="outline-1 h-10 w-64 rounded-3xl pl-5 border border-gray-300"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <button
+                  className=" ml-2 outline-none rounded-4xl pl-4 pr-4 bg-blue-400"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </form>
             </div>
           )}
 
@@ -80,8 +104,8 @@ const Navbar = () => {
         <div className="md:hidden bg-gray-100 p-4 space-y-4 text-center">
           {auth ? (
             <>
-              <NavLink to="/" className="block nav-link">
-                Product
+              <NavLink to="/" className="nav-link">
+                Products
               </NavLink>
               <NavLink to="/add" className="block nav-link">
                 Add Product
@@ -102,6 +126,9 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              <NavLink to="/" className="block nav-link">
+                Products
+              </NavLink>
               <NavLink to="/signup" className="block nav-link">
                 SignUp
               </NavLink>

@@ -33,17 +33,17 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/",
+    element: (
+      <div>
+        <Navbar />
+        <Product />
+      </div>
+    ),
+  },
+  {
     element: <PrivateCompnent />,
     children: [
-      {
-        path: "/",
-        element: (
-          <div>
-            <Navbar />
-            <Product />
-          </div>
-        ),
-      },
       {
         path: "/add",
         element: (

@@ -57,6 +57,14 @@ app.post("/add", async (req, res) => {
   res.send(result);
 });
 
+app.get("/show", async (req, res) => {
+
+  let products = await Product.find({});
+
+  res.send(products);
+
+});
+
 app.get("/search/:key", async (req, res) => {
   let result = await Product.find({
     $or: [
@@ -78,6 +86,18 @@ app.get("/search/:key", async (req, res) => {
 
   res.send(result);
 });
+
+app.patch("/update", (req, res) => {
+
+  res.send("ok");
+});
+
+// app.get("/profile", async (req, res) => {
+
+//   let profile = await Users.
+
+//   res.send("ok");
+// });
 
 app.listen(3000, () => {
   console.log("Server is Running");

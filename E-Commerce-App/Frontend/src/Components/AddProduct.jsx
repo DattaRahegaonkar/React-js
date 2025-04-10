@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
   // Separate useState variables for each field
@@ -6,31 +7,30 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [company, setCompany] = useState("");
+  const navigate = useNavigate();
 
   // Handle form submission
   const AddProduct = async (e) => {
     e.preventDefault();
 
-    const auth = JSON.parse(localStorage.getItem("user"))
-    let userid = auth._id;    
-
-    // console.log({ name, price, category, company, userid });
-
+    const auth = JSON.parse(localStorage.getItem("user"));
+    let userid = auth._id;
 
     let result = await fetch("http://localhost:3000/add", {
       method: "post",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name, price, category, company, userid })
+      body: JSON.stringify({ name, price, category, company, userid }),
     });
 
-    result = await result.json()
-    
+    result = await result.json();
 
     // Clear input fields after submission
     setName("");
     setPrice("");
     setCategory("");
     setCompany("");
+
+    navigate("/");
 
     // Here, you can send `newProduct` to an API
   };
@@ -47,6 +47,7 @@ const AddProduct = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="p-2 border rounded-lg focus:ring focus:ring-green-300"
+          required
         />
         <input
           type="number"
@@ -54,6 +55,7 @@ const AddProduct = () => {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           className="p-2 border rounded-lg focus:ring focus:ring-green-300"
+          required
         />
         <select
           value={category}
@@ -71,6 +73,7 @@ const AddProduct = () => {
           value={company}
           onChange={(e) => setCompany(e.target.value)}
           className="p-2 border rounded-lg focus:ring focus:ring-green-300"
+          required
         />
         <button type="submit" className="bg-blue-600 text-white p-2 rounded-lg">
           Add Product
